@@ -58,6 +58,37 @@ async function run() {
             res.send(result);
         });
 
+        //// post  users Data
+        app.post("/usersData", async (req, res) => {
+            const result = await usersCollection.insertOne(req.body);
+            res.send(result);
+            console.log(result);
+        });
+
+        //up-sert google imformation
+        app.put("/usersData", async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = { $set: user };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+            console.log(result);
+        });
+
+        //update admin filed
+        app.put('/usersData/admin', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const updateDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            res.json(result)
+
+        })
     }
     finally {
         // await client.close();
