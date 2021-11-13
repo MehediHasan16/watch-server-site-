@@ -23,6 +23,7 @@ async function run() {
         const productsCollection = client.db("nicheProduct").collection("products");
         const usersCollection = client.db("nicheProduct").collection("users");
         const purchaseOrdersCollection = client.db("nicheProduct").collection("purchaseOrders");
+        const reviewCollection = client.db("nicheProduct").collection("userReview");
 
         // add Products post
         app.post("/addToProducts", async (req, res) => {
@@ -57,13 +58,80 @@ async function run() {
             const result = await purchaseOrdersCollection.insertOne(productsData);
             res.send(result);
         });
+        //  user review post 
+        app.post("/userReview", async (req, res) => {
+            const reviewData = req.body;
+            console.log(reviewData);
+            const result = await reviewCollection.insertOne(reviewData);
+            res.send(result);
+            console.log(result);
+        });
+
+        //find product order width email
+        app.get('/myOrders/:email', async (req, res) => {
+            const email = req.params.email;
+            const result = await purchaseOrdersCollection.find({ email: email }).toArray();
+            res.send(result)
+        })
+
+        // all purchase
+        app.get("/allPurchase", async (req, res) => {
+            const result = await purchaseOrdersCollection.find({}).toArray();
+            res.send(result);
+
+        })
+
+        // delete product 
+        app.delete('/deleteProduct/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await purchaseOrdersCollection.deleteOne({ _id: ObjectId(id) })
+            res.send(result);
+
+
+        })
+        // delete manage all products
+        app.delete('/manageProductCancel/:id', async (req, res) => {
+
+            const id = req.params.id;
+
+            const result = await purchaseOrdersCollection.deleteOne({ _id: ObjectId(id) })
+            res.send(result);
+            console.log(result);
+
+        })
+        //update status bar
+        app.put('/approvedProduct/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const option = { upset: true };
+            const updateDoc = {
+                $set: {
+                    status: "Shipped"
+                },
+            }
+            const result = await purchaseOrdersCollection.updateOne(filter, updateDoc, option);
+            res.send(result)
+            console.log(result);
+        })
 
         //// post  users Data
         app.post("/usersData", async (req, res) => {
             const result = await usersCollection.insertOne(req.body);
             res.send(result);
-            console.log(result);
+
         });
+
+        // filter admin email
+        app.get('/usersData/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const user = await usersCollection.findOne(filter);
+            let isAdmin = false;
+            if (user?.role === 'admin') {
+                isAdmin = true;
+            }
+            res.json({ admin: isAdmin });
+        })
 
         //up-sert google imformation
         app.put("/usersData", async (req, res) => {
@@ -73,7 +141,7 @@ async function run() {
             const updateDoc = { $set: user };
             const result = await usersCollection.updateOne(filter, updateDoc, options);
             res.json(result);
-            console.log(result);
+
         });
 
         //update admin filed
