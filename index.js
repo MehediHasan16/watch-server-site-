@@ -50,7 +50,7 @@ async function run() {
             const id = req.params.id;
             const result = await productsCollection.find({ _id: ObjectId(id) }).toArray();
             res.send(result[0]);
-            console.log(result[0]);
+
         })
         // /addProductOrder
         app.post("/addProductOrder", async (req, res) => {
@@ -61,10 +61,10 @@ async function run() {
         //  user review post 
         app.post("/userReview", async (req, res) => {
             const reviewData = req.body;
-            console.log(reviewData);
+
             const result = await reviewCollection.insertOne(reviewData);
             res.send(result);
-            console.log(result);
+
         });
 
         //review get 
