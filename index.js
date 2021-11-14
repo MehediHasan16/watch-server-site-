@@ -67,6 +67,12 @@ async function run() {
             console.log(result);
         });
 
+        //review get 
+        app.get("/reviewInfo", async (req, res) => {
+            const result = await reviewCollection.find({}).toArray();
+            res.send(result);
+        });
+
         //find product order width email
         app.get('/myOrders/:email', async (req, res) => {
             const email = req.params.email;
