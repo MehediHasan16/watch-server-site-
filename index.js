@@ -105,6 +105,16 @@ async function run() {
             console.log(result);
 
         })
+        //  manage delete products
+        app.delete('/manageProductDelete/:id', async (req, res) => {
+
+            const id = req.params.id;
+
+            const result = await productsCollection.deleteOne({ _id: ObjectId(id) })
+            res.send(result);
+            console.log(result);
+
+        })
         //update status bar
         app.put('/approvedProduct/:id', async (req, res) => {
             const id = req.params.id;
